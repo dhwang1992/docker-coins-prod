@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.rng.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    projectname: {{ .Values.rng.labels.projectname }}
+    environment: {{ .Values.rng.labels.environment }}
+    servicename: {{ .Values.rng.labels.servicename }}
+spec:
+  type: {{ .Values.rng.service.type }}
+  ports:
+    - port: {{ .Values.rng.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    projectname: {{ .Values.rng.labels.projectname }}
+    environment: {{ .Values.rng.labels.environment }}
+    servicename: {{ .Values.rng.labels.servicename }}
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Values.rng.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    projectname: {{ .Values.rng.labels.projectname }}
+    environment: {{ .Values.rng.labels.environment }}
+    servicename: {{ .Values.rng.labels.servicename }}
+spec:
+  selector:
+    matchLabels:
+      projectname: {{ .Values.rng.labels.projectname }}
+      environment: {{ .Values.rng.labels.environment }}
+      servicename: {{ .Values.rng.labels.servicename }}
+  template:
+    metadata:
+      labels:
+        projectname: {{ .Values.rng.labels.projectname }}
+        environment: {{ .Values.rng.labels.environment }}
+        servicename: {{ .Values.rng.labels.servicename }}
+    spec:
+      containers:
+        - name: {{ .Values.rng.name }}
+          image: "{{ .Values.rng.image.repository }}:{{ .Values.rng.image.tag }}"
+          imagePullPolicy: {{ .Values.rng.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http

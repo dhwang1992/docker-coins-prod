@@ -1,0 +1,66 @@
+namespace: prod
+hasher:
+  name: hasher
+  labels:
+    projectname: dockercoins
+    environment: prod
+    servicename: hasher
+  replicaCount: 1
+  image:
+    repository: 127.0.0.1:32709/hasher
+    tag: v0.1
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+
+worker:
+  name: worker
+  labels:
+    projectname: dockercoins
+    environment: prod
+    servicename: worker
+  replicaCount: 1
+  image:
+    repository: 127.0.0.1:32709/worker
+    tag: v0.1
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 80
+
+rng:
+  name: rng
+  labels:
+    projectname: dockercoins
+    environment: prod
+    servicename: rng
+  image:
+    repository: 127.0.0.1:32709/rng
+    tag: v0.1
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 80
+
+webui:
+  name: webui
+  labels:
+    projectname: dockercoins
+    environment: prod
+    servicename: webui
+  replicaCount: 1
+  image:
+    repository: 127.0.0.1:32709/webui
+    tag: v0.1
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    port: 30123
+  ingress:
+    enabled: true
+    hosts:
+      - host: webui.192.168.33.111.nip.io
+        paths: ['/']
